@@ -1,113 +1,120 @@
-import Image from "next/image";
+"use client";
+
+import { EthWallet } from "@/components/EthWallet";
+import { SolanaWallet } from "@/components/SolanaWallet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { generateMnemonic } from "bip39";
+import { Check, ArrowDown } from "lucide-react";
+import { useState } from "react";
 
 export default function Home() {
+  const [mnemonic, setMnemonic] = useState<string[]>([]);
+  const [displaySeed, setDisplaySeed] = useState<boolean>(false);
+  const [copied, setCopied] = useState<boolean>(false);
+  const [seedCreated, setSeedCreated] = useState<boolean>(false)
+
+  const handleCopy = async () => {
+    try {
+      const toBeCopied = mnemonic.join(" ");
+      await navigator.clipboard.writeText(toBeCopied);
+      console.log(toBeCopied);
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false)
+      }, 5000)
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
+    <main className="h-screen w-screen bg-gray-200 overflow-y-scroll">
+      {!seedCreated && (<div className="h-screen flex flex-col justify-center items-center gap-2 m-4">
+        <p className="font-bold text-3xl">
+          Wanna get into <span className="bg-white">BLOCKCHAIN</span> and <span className="bg-white">CRYPTOCURRENCIES</span>?
         </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <ArrowDown className="h-12 w-12"/>
+        <p className="font-semibold text-xl">
+          Well, you need an account for that.
+        </p>
+        <ArrowDown className="h-12 w-12"/>
+        <p className="font-semibold text-2xl">
+          Create a seed phrase, get multiple accounts on the Ethereum and the Solana blockchain in a matter of seconds
+        </p>
+        <ArrowDown className="h-12 w-12"/>
+        <Button
+          className="bg-black"
+          onClick={async function () {
+            const mn = await generateMnemonic();
+            const mnArr = mn.split(" ");
+            setMnemonic(mnArr);
+            setDisplaySeed(false);  
+            setCopied(false); 
+            setSeedCreated(true)
+          }}
+        >
+          Create Seed Phrase
+        </Button>
+      </div>)}
+      
+      {seedCreated && (<div>
+        {mnemonic.length > 0 && !displaySeed && (
+        <div className="flex justify-center">
+          <Button
+            className="mt-8 bg-red-600 hover:bg-black"
+            onClick={function () {
+              setDisplaySeed(true);
+            }}
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+            Show Seed phrase
+          </Button>
         </div>
-      </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      )}
+        {displaySeed && (
+          <div className="flex justify-center">
+            <div className="mt-8 bg-black p-10 rounded-2xl shadow-xl drop-shadow-2xl">
+              <div className="grid grid-cols-4 gap-4">
+                {mnemonic.map((word, index) => (
+                  <Input className="" key={index} type="text" value={word} readOnly />
+                ))}
+              </div>
+              <div className="flex justify-center gap-3">
+                <Button
+                  className="mt-8 bg-green-500 text-black hover:bg-white"
+                  onClick={handleCopy}
+                >
+                  {copied ? (
+                    <>
+                      <Check className="inline-block mr-2" /> Copied
+                    </>
+                  ) : (
+                    "Copy Seed Phrase"
+                  )}
+                </Button>
+                <Button
+                  className="mt-8 bg-yellow-500 text-black hover:text-white"
+                  onClick={function () {
+                    setDisplaySeed(false);
+                  }}
+                >
+                  Hide Seed Phrase
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="p-2">
+          <div className="flex flex-col gap-4 mt-8 sm:flex-row sm:justify-center">
+            <div className="w-full mx-auto">
+              <SolanaWallet mnemonic={mnemonic} />
+            </div>
+            <div className="w-full mx-auto">
+              <EthWallet mnemonic={mnemonic} />
+            </div>
+          </div>
+        </div>
+      </div>)}
     </main>
   );
 }
